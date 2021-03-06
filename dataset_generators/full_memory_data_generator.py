@@ -17,7 +17,9 @@ class FullMemoryDataGenerator(DataGenerator):
         super().__init__(*args, **kwargs)
         self.items_len = items_len
         self.features_range = features_range
-        self.seen_vectors: List[np.array] = []
+
+    def _init_seen_vectors(self) -> List[np.array]:
+        return []
 
     def _is_seen(self, v: np.array) -> bool:
         return any([(v == seen_item).all() for seen_item in self.seen_vectors])
@@ -62,7 +64,7 @@ class FullMemoryDataGenerator(DataGenerator):
 
     def _gen_single_changed_item(self):
         seen_item, label = self._gen_seen_item()
-        change_position = np.random.randint(0, len(seen_item))
+        change_position = np.random.randint(0, self.items_len)
 
         not_found = True
         select_step = random.choice([-1, 1])

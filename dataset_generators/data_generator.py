@@ -33,7 +33,11 @@ class DataGenerator:
         self.missed_value = missed_value
         np.random.seed(seed)
 
-        self.seen_vectors: List[Any] = []
+        self.seen_vectors: Any = self._init_seen_vectors()
+
+    @abstractmethod
+    def _init_seen_vectors(self) -> Any:
+        pass
 
     @abstractmethod
     def _gen_new_item(self) -> InputOutput_T:
@@ -47,13 +51,11 @@ class DataGenerator:
     def _gen_seen_with_missed_item(self) -> InputOutput_T:
         pass
 
-    @abstractmethod
     def _gen_changed_item(self) -> InputOutput_T:
-        pass
+        return None, None
 
-    @abstractmethod
     def _gen_changed_with_missed_item(self) -> InputOutput_T:
-        pass
+        return None, None
 
     def __iter__(self):
         while self.num_of_batches is None or self.num_of_batches != 0:
@@ -66,13 +68,14 @@ class DataGenerator:
 
         num_of_generated_items = self.batch_size
         if self.batch_size != 1:
-            self.seen_vectors = []
+            self.seen_vectors = self._init_seen_vectors()
             first_input, first_label = self._gen_new_item()
             batch_inputs.append(first_input)
             batch_labels.append(first_label)
             num_of_generated_items -= 1
 
-        for batch in range(num_of_generated_items):
+        already_generated = 0
+        while already_generated < num_of_generated_items:
             input, label = np.random.choice([
                 self._gen_new_item,
                 self._gen_seen_item,
@@ -80,6 +83,9 @@ class DataGenerator:
                 self._gen_changed_item,
                 self._gen_changed_with_missed_item
             ], p=self.mut_prob)()
+            if input is None or label is None:
+                continue
             batch_inputs.append(input)
             batch_labels.append(label)
+            already_generated += 1
         return np.stack(batch_inputs), np.stack(batch_labels)
