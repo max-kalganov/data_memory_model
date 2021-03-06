@@ -6,6 +6,8 @@ import tensorflow as tf
 import numpy as np
 import tqdm as tqdm
 
+from dataset_generators.data_generator import DataGenerator
+
 MutProb_T = Tuple[int, int, int, int, int]
 InputOutput_T = Tuple[np.array, np.array]
 
@@ -14,34 +16,13 @@ InputOutput_T = Tuple[np.array, np.array]
 
 
 @gin.configurable
-class FullMemoryDataGenerator:
-    def __init__(self, batch_size: int, num_of_batches: Optional[int], items_len: int, features_range: int,
-                 mut_prob: MutProb_T, missed_value: int, seed: int):
-        """ Generates dataset
+class FullMemoryDataGenerator(DataGenerator):
+    def __init__(self, items_len: int, features_range: int, *args, **kwargs):
+        """ Generates dataset with random values"""
 
-        self.seen_values creates one item by default
-
-        Args:
-            batch_size: int - if 1 seen_vectors not overwritten, else seen_vectors are used only for a batch
-            num_of_batches: Optional[int] - if None - no limit generator, else seq_len batches
-            mut_prob: Tuple[int, int, int, int, int] - Probabilities for running methods:
-                        self._gen_new_item,
-                        self._gen_seen_item,
-                        self._gen_seen_with_missed_item,
-                        self._gen_changed_item,
-                        self._gen_changed_with_missed_item
-        """
-
-        assert sum(mut_prob) == 1, "wrong mut prob"
-        assert batch_size >= 1, "wrong batch size"
-        self.batch_size = batch_size
+        super().__init__(*args, **kwargs)
         self.items_len = items_len
         self.features_range = features_range
-        self.mut_prob = mut_prob
-        self.num_of_batches = num_of_batches
-        self.missed_value = missed_value
-        np.random.seed(seed)
-
         self.seen_vectors: List[np.array] = []
 
     def _is_seen(self, v: np.array) -> bool:
@@ -125,39 +106,9 @@ class FullMemoryDataGenerator:
         changed_item[missed_position] = self.missed_value
         return changed_item, np.array([0, None])
 
-    def __iter__(self):
-        while self.num_of_batches is None or self.num_of_batches != 0:
-            yield self.__next__()
-            self.num_of_batches = self.num_of_batches if self.num_of_batches is None else self.num_of_batches - 1
-
-    def __next__(self):
-        batch_inputs = []
-        batch_labels = []
-
-        num_of_generated_items = self.batch_size
-        if self.batch_size != 1:
-            self.seen_vectors = []
-            first_input, first_label = self._gen_new_item()
-            batch_inputs.append(first_input)
-            batch_labels.append(first_label)
-            num_of_generated_items -= 1
-
-        for batch in range(num_of_generated_items):
-            input, label = np.random.choice([
-                self._gen_new_item,
-                self._gen_seen_item,
-                self._gen_seen_with_missed_item,
-                self._gen_changed_item,
-                self._gen_changed_with_missed_item
-            ], p=self.mut_prob)()
-            batch_inputs.append(input)
-            batch_labels.append(label)
-        return np.stack(batch_inputs), np.stack(batch_labels)
-
 
 if __name__ == '__main__':
     gin.parse_config_file('configs/default.gin')
-    a = FullMemoryDataGenerator(batch_size=20, num_of_batches=2000)
+    a = FullMemoryDataGenerator(batch_size=20, num_of_batches=10)
     for i in tqdm.tqdm(a):
-        pass
-        # print(i)
+        print(i)
