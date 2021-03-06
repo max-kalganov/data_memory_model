@@ -79,6 +79,9 @@ class SequenceMemoryDataGenerator(DataGenerator):
         seen_item[missed_position] = self.missed_value
         return seen_item, label
 
+    def _gen_unseen_with_missed_item(self) -> InputOutput_T:
+        raise NotImplemented("not implemented _gen_unseen_with_missed_item")
+
     def _gen_single_changed_item(self, all_seen_items: List[np.array]):
         seen_item, label = self._gen_seen_item()
         change_position = np.random.randint(0, self.items_len)
