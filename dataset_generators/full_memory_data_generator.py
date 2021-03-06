@@ -13,7 +13,7 @@ InputOutput_T = Tuple[np.array, np.array]
 # tf.keras.utils.Sequence
 
 
-@gin.configurable()
+@gin.configurable
 class FullMemoryDataGenerator:
     def __init__(self, batch_size: int, num_of_batches: Optional[int], items_len: int, features_range: int,
                  mut_prob: MutProb_T, missed_value: int, seed: int):
@@ -81,7 +81,7 @@ class FullMemoryDataGenerator:
         assert len(all_positions) != 0, f"not found position for missed_position"
 
         seen_item, label = self._gen_seen_item()
-        label[1] = tf.one_hot(seen_item[missed_position], self.features_range)
+        label[1] = tf.one_hot(seen_item[missed_position], self.features_range).numpy()
         seen_item[missed_position] = self.missed_value
         return seen_item, label
 
@@ -156,8 +156,8 @@ class FullMemoryDataGenerator:
 
 
 if __name__ == '__main__':
-    gin.parse_config_file('configs/default_config.gin')
-    a = FullMemoryDataGenerator(batch_size=5, num_of_batches=2000)
+    gin.parse_config_file('configs/default.gin')
+    a = FullMemoryDataGenerator(batch_size=20, num_of_batches=2000)
     for i in tqdm.tqdm(a):
         pass
         # print(i)
