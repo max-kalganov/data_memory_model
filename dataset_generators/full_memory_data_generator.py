@@ -1,18 +1,12 @@
 import random
-from typing import Tuple, Optional, List
+from typing import Optional, List
 
 import gin
 import tensorflow as tf
 import numpy as np
 import tqdm as tqdm
 
-from dataset_generators.data_generator import DataGenerator
-
-MutProb_T = Tuple[int, int, int, int, int]
-InputOutput_T = Tuple[np.array, np.array]
-
-
-# tf.keras.utils.Sequence
+from dataset_generators.data_generator import DataGenerator, InputOutput_T
 
 
 @gin.configurable
