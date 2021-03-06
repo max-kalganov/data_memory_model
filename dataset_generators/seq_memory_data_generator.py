@@ -30,10 +30,10 @@ class SequenceMemoryDataGenerator(DataGenerator):
         return v_config in self.seen_configs
 
     def _get_vector_by_config(self, config: InputVectorConfig_T) -> np.array:
-        pass
+        raise NotImplemented("not implemented _get_vector_by_config")
 
     def _gen_config(self) -> InputVectorConfig_T:
-        pass
+        raise NotImplemented("not implemented _gen_config")
 
     def _gen_new_item(self) -> InputOutput_T:
         # TODO: check _check_if_only_one_correct when create new item
