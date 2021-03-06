@@ -2,6 +2,13 @@ FullMemoryDataGenerator.batch_size = 32
 FullMemoryDataGenerator.num_of_batches = 1
 FullMemoryDataGenerator.items_len = 5
 FullMemoryDataGenerator.features_range = 10
-FullMemoryDataGenerator.mut_prob = (0.35, 0.1, 0.45, 0.05, 0.05)
+FullMemoryDataGenerator.mut_prob = (
+    0.25,   # self._gen_new_item
+    0.1,    # self._gen_seen_item
+    0.45,   # self._gen_seen_with_missed_item
+    0.1,    # self._gen_unseen_with_missed_item
+    0.05,   # self._gen_changed_item
+    0.05    # self._gen_changed_with_missed_item
+)
 FullMemoryDataGenerator.missed_value = 100
 FullMemoryDataGenerator.seed = 5

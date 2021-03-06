@@ -4,7 +4,7 @@ from typing import Tuple, Optional, Any, List
 import gin
 import numpy as np
 
-MutProb_T = Tuple[int, int, int, int, int]
+MutProb_T = Tuple[float, float, float, float, float, float]
 InputOutput_T = Tuple[np.array, np.array]
 
 
@@ -17,10 +17,11 @@ class DataGenerator:
         Args:
             batch_size: int - if 1 seen_vectors not overwritten, else seen_vectors are used only for a batch
             num_of_batches: Optional[int] - if None - no limit generator, else num_of_batches batches
-            mut_prob: Tuple[int, int, int, int, int] - Probabilities for running methods:
+            mut_prob: Tuple[float, float, float, float, float, float] - Probabilities for running methods:
                         self._gen_new_item,
                         self._gen_seen_item,
                         self._gen_seen_with_missed_item,
+                        self._gen_unseen_with_missed_item,
                         self._gen_changed_item,
                         self._gen_changed_with_missed_item
         """
@@ -51,6 +52,9 @@ class DataGenerator:
     def _gen_seen_with_missed_item(self) -> InputOutput_T:
         pass
 
+    def _gen_unseen_with_missed_item(self) -> InputOutput_T:
+        return None, None
+
     def _gen_changed_item(self) -> InputOutput_T:
         return None, None
 
@@ -80,6 +84,7 @@ class DataGenerator:
                 self._gen_new_item,
                 self._gen_seen_item,
                 self._gen_seen_with_missed_item,
+                self._gen_unseen_with_missed_item,
                 self._gen_changed_item,
                 self._gen_changed_with_missed_item
             ], p=self.mut_prob)()
