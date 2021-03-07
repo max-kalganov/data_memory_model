@@ -46,10 +46,3 @@ class SimpleMemoryDataGenerator(FullMemoryDataGenerator):
         missed_position = self.items_len - 1
         changed_item[missed_position] = self.missed_value
         return changed_item, np.array([0, None])
-
-
-if __name__ == '__main__':
-    gin.parse_config_file('configs/default.gin')
-    a = SimpleMemoryDataGenerator(batch_size=1, num_of_batches=10000)
-    for i in tqdm.tqdm(a):
-        pass

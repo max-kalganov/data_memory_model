@@ -10,12 +10,13 @@ InputOutput_T = Tuple[np.array, np.array]
 
 @gin.configurable
 class DataGenerator:
-    def __init__(self, batch_size: int, num_of_batches: Optional[int], mut_prob: MutProb_T, missed_value: int,
+    def __init__(self, batch_size: Optional[int], seq_len: int, num_of_batches: int, mut_prob: MutProb_T, missed_value: int,
                  seed: int):
         """ Implements data generator interface and some base functionality
         Args:
-            batch_size: int - if 1 seen_vectors not overwritten, else seen_vectors are used only for a batch
-            num_of_batches: Optional[int] - if None - no limit generator, else num_of_batches batches
+            seq_len: int - if 1 seen_vectors not overwritten, else seen_vectors are used only for a batch
+            batch_size: Optional[int] - if None - no limit generator, else batch sizes are set
+            num_of_batches: int - num of batches
             mut_prob: Tuple[float, float, float, float, float, float] - Probabilities for running methods:
                         self._gen_new_item,
                         self._gen_seen_item,
@@ -26,8 +27,10 @@ class DataGenerator:
         """
 
         assert sum(mut_prob) == 1, "wrong mut prob"
-        assert batch_size >= 1, "wrong batch size"
+        assert num_of_batches >= 1, "wrong num of batches"
+        assert batch_size >= 1 or batch_size is None, "wrong batch size"
         self.batch_size = batch_size
+        self.seq_len = seq_len
         self.mut_prob = mut_prob
         self.num_of_batches = num_of_batches
         self.missed_value = missed_value
@@ -61,20 +64,20 @@ class DataGenerator:
         return None, None
 
     def __iter__(self):
-        while self.num_of_batches is None or self.num_of_batches != 0:
+        while self.num_of_batches != 0:
             yield self.__next__()
-            self.num_of_batches = self.num_of_batches if self.num_of_batches is None else self.num_of_batches - 1
+            self.num_of_batches -= 1
 
-    def __next__(self):
-        batch_inputs = []
-        batch_labels = []
+    def _next_seq(self):
+        seq_inputs = []
+        seq_labels = []
 
-        num_of_generated_items = self.batch_size
-        if self.batch_size != 1:
+        num_of_generated_items = self.seq_len
+        if self.seq_len != 1 or self.seen_vectors == self._init_seen_vectors():
             self.seen_vectors = self._init_seen_vectors()
             first_input, first_label = self._gen_new_item()
-            batch_inputs.append(first_input)
-            batch_labels.append(first_label)
+            seq_inputs.append(first_input)
+            seq_labels.append(first_label)
             num_of_generated_items -= 1
 
         already_generated = 0
@@ -89,7 +92,16 @@ class DataGenerator:
             ], p=self.mut_prob)()
             if input is None or label is None:
                 continue
-            batch_inputs.append(input)
-            batch_labels.append(label)
+            seq_inputs.append(input)
+            seq_labels.append(label)
             already_generated += 1
-        return np.stack(batch_inputs), np.stack(batch_labels)
+        return np.stack(seq_inputs).astype('float32'), np.stack(seq_labels).astype('float32')
+
+    def __next__(self):
+        batch_x = []
+        batch_y = []
+        for i in range(self.batch_size):
+            seq_x, seq_y = self._next_seq()
+            batch_x.append(seq_x)
+            batch_y.append(seq_y)
+        return np.stack(batch_x).astype('float32'), np.stack(batch_y).astype('float32')
