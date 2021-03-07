@@ -13,7 +13,6 @@ class DataGenerator:
     def __init__(self, batch_size: int, num_of_batches: Optional[int], mut_prob: MutProb_T, missed_value: int,
                  seed: int):
         """ Implements data generator interface and some base functionality
-
         Args:
             batch_size: int - if 1 seen_vectors not overwritten, else seen_vectors are used only for a batch
             num_of_batches: Optional[int] - if None - no limit generator, else num_of_batches batches
