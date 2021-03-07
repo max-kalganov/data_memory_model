@@ -13,3 +13,9 @@ DataGenerator.seed = 5
 
 FullMemoryDataGenerator.items_len = 5
 FullMemoryDataGenerator.features_range = 10
+
+SimpleLSTMModel.input_shape = (5, )
+SimpleLSTMModel.features_range = 10
+SimpleLSTMModel.batch_size = 32
+SimpleLSTMModel.train_test_split = 0.2
+SimpleLSTMModel.train_val_split = 0.2

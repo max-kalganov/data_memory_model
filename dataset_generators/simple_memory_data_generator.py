@@ -50,6 +50,6 @@ class SimpleMemoryDataGenerator(FullMemoryDataGenerator):
 
 if __name__ == '__main__':
     gin.parse_config_file('configs/default.gin')
-    a = SimpleMemoryDataGenerator(batch_size=20, num_of_batches=10)
+    a = SimpleMemoryDataGenerator(batch_size=1, num_of_batches=10000)
     for i in tqdm.tqdm(a):
-        print(i)
+        pass
