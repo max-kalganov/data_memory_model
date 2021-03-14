@@ -45,13 +45,13 @@ class SequenceMemoryDataGenerator(DataGenerator):
 
         self.seen_vectors.add(new_config)
         new_item = self._get_vector_by_config(new_config)
-        return new_item, np.array([0, None])
+        return new_item, np.array([0, np.nan])
 
     def _gen_seen_item(self) -> InputOutput_T:
         seen_config_ind = random.randint(0, len(self.seen_vectors))
         seen_config = list(self.seen_vectors)[seen_config_ind]
         seen_item = self._get_vector_by_config(seen_config)
-        return seen_item, np.array([1, None])
+        return seen_item, np.array([1, np.nan])
 
     def _has_only_one_correct(self, missed_position: int, item: Optional[np.array] = None) -> bool:
         """Reads all seen items and checks if there are no duplicates without missed position"""
@@ -75,7 +75,7 @@ class SequenceMemoryDataGenerator(DataGenerator):
         assert len(all_positions) != 0, f"not found position for missed_position"
 
         seen_item, label = self._gen_seen_item()
-        label[1] = tf.one_hot(seen_item[missed_position], self.features_range).numpy()
+        label[1] = seen_item[missed_position]
         seen_item[missed_position] = self.missed_value
         return seen_item, label
 

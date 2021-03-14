@@ -1,6 +1,6 @@
 DataGenerator.batch_size = 10
 DataGenerator.seq_len = 30
-DataGenerator.num_of_batches = 100
+DataGenerator.num_of_batches = 500
 DataGenerator.mut_prob = (
     0.25,   # self._gen_new_item
     0.1,    # self._gen_seen_item
@@ -15,8 +15,9 @@ DataGenerator.seed = 5
 FullMemoryDataGenerator.items_len = 5
 FullMemoryDataGenerator.features_range = 10
 
-SimpleLSTMModel.input_shape = (6, 5,) # (time_steps, features)
+SimpleLSTMModel.seq_len = 30
+SimpleLSTMModel.items_len = 5
 SimpleLSTMModel.features_range = 10
-SimpleLSTMModel.batch_size = 32
+SimpleLSTMModel.batch_size = 10
 SimpleLSTMModel.train_test_split = 0.2
 SimpleLSTMModel.train_val_split = 0.2

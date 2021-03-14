@@ -5,14 +5,15 @@ import tensorflow as tf
 import numpy as np
 from sklearn.model_selection import train_test_split
 from tensorflow.python.keras import Input, Model
-from tensorflow.python.keras.layers import Dense, Bidirectional, LSTM
+from tensorflow.python.keras.layers import Dense, Bidirectional, LSTM, TimeDistributed
 from dataset_generators.simple_memory_data_generator import SimpleMemoryDataGenerator
 
 
 @gin.configurable
 class SimpleLSTMModel:
-    def __init__(self, input_shape: Tuple, features_range: int, batch_size, train_test_split, train_val_split):
-        self.input_shape = input_shape
+    def __init__(self, seq_len: int, items_len: int, features_range: int, batch_size, train_test_split, train_val_split):
+        self.items_len = items_len
+        self.seq_len = seq_len
         self.features_range = features_range
         self.train_test_split = train_test_split
         self.train_val_split = train_val_split
@@ -20,8 +21,8 @@ class SimpleLSTMModel:
         self.model = self.set_model()
 
     def set_model(self):
-        input_layer = Input(shape=self.input_shape)
-        lstm1 = LSTM(units=64, activation='relu', return_sequences=True)(input_layer)
+        input_layer = Input(shape=(self.seq_len, self.items_len, ))
+        lstm1 = LSTM(units=64, activation='relu', return_sequences=True, input_shape=(self.seq_len, self.items_len))(input_layer)
         lstm2 = LSTM(units=64, activation='relu', return_sequences=True)(lstm1)
         lstm3 = LSTM(units=64, activation='relu', return_sequences=True)(lstm2)
 
@@ -66,7 +67,10 @@ class SimpleLSTMModel:
 
     def missed_value_loss(self, y_true, y_pred):
         loss = 0
-        if y_pred is not None:
+        print(y_true)
+
+        if y_true != np.nan:
+            y_true = tf.one_hot(y_true, self.features_range)
             loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred)
         return loss
 

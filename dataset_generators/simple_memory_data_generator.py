@@ -1,9 +1,7 @@
 import random
 
-import gin
 import tensorflow as tf
 import numpy as np
-import tqdm as tqdm
 
 from dataset_generators.data_generator import InputOutput_T
 from dataset_generators.full_memory_data_generator import FullMemoryDataGenerator
@@ -18,7 +16,7 @@ class SimpleMemoryDataGenerator(FullMemoryDataGenerator):
     def _gen_seen_with_missed_item(self) -> InputOutput_T:
         missed_position = self.items_len - 1
         seen_item, label = self._gen_seen_item()
-        label[1] = tf.one_hot(seen_item[missed_position], self.features_range).numpy()
+        label[1] = seen_item[missed_position]
         seen_item[missed_position] = self.missed_value
         return seen_item, label
 
@@ -45,4 +43,4 @@ class SimpleMemoryDataGenerator(FullMemoryDataGenerator):
 
         missed_position = self.items_len - 1
         changed_item[missed_position] = self.missed_value
-        return changed_item, np.array([0, None])
+        return changed_item, np.array([0, np.nan])
