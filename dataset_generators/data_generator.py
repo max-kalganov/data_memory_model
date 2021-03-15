@@ -95,7 +95,7 @@ class DataGenerator:
             seq_inputs.append(input)
             seq_labels.append(label)
             already_generated += 1
-        return np.stack(seq_inputs).astype('float32'), np.stack(seq_labels).astype('float32')
+        return np.stack(seq_inputs).astype('int64'), np.stack(seq_labels).astype('int64')
 
     def __next__(self):
         batch_x = []
@@ -104,4 +104,5 @@ class DataGenerator:
             seq_x, seq_y = self._next_seq()
             batch_x.append(seq_x)
             batch_y.append(seq_y)
-        return np.stack(batch_x).astype('float32'), np.stack(batch_y).astype('float32')
+        batch_y_res = np.stack(batch_y).astype('int64')
+        return np.stack(batch_x).astype('int64'), (batch_y_res[:, :, 0], batch_y_res[:, :, 1])

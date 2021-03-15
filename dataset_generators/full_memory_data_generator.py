@@ -32,11 +32,11 @@ class FullMemoryDataGenerator(DataGenerator):
             new_item = np.random.randint(0, self.features_range, self.items_len)
             not_found = self._is_seen(new_item)
         self.seen_vectors.append(new_item)
-        return new_item, np.array([0, np.nan])
+        return new_item, np.array([0, -1])
 
     def _gen_seen_item(self) -> InputOutput_T:
         seen_item = np.copy(random.choice(self.seen_vectors))
-        return seen_item, np.array([1, np.nan])
+        return seen_item, np.array([1, -1])
 
     def _has_only_one_correct(self, missed_position: int, item: Optional[np.array] = None) -> bool:
         """Reads all seen items and checks if there are no duplicates without missed position"""
@@ -82,7 +82,7 @@ class FullMemoryDataGenerator(DataGenerator):
         while not_found:
             seen_item, not_found, _ = self._gen_single_changed_item()
         self.seen_vectors.append(seen_item)
-        return seen_item, np.array([0, np.nan])
+        return seen_item, np.array([0, -1])
 
     def _gen_changed_with_missed_item(self) -> InputOutput_T:
         not_found = True
@@ -100,7 +100,7 @@ class FullMemoryDataGenerator(DataGenerator):
 
         assert len(indexes) != 0, f"not found position for missed_position"
         changed_item[missed_position] = self.missed_value
-        return changed_item, np.array([0, np.nan])
+        return changed_item, np.array([0, -1])
 
 
 if __name__ == '__main__':

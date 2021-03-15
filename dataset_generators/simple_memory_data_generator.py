@@ -43,4 +43,4 @@ class SimpleMemoryDataGenerator(FullMemoryDataGenerator):
 
         missed_position = self.items_len - 1
         changed_item[missed_position] = self.missed_value
-        return changed_item, np.array([0, np.nan])
+        return changed_item, np.array([0, -1])
