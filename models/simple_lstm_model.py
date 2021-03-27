@@ -1,3 +1,5 @@
+import os
+from datetime import datetime
 from typing import Tuple
 
 import gin
@@ -5,7 +7,9 @@ import tensorflow as tf
 import numpy as np
 from sklearn.model_selection import train_test_split
 from tensorflow.python.keras import Input, Model
-from tensorflow.python.keras.layers import Dense, Bidirectional, LSTM, TimeDistributed, Dropout
+from tensorflow.python.keras.layers import Dense, LSTM, TimeDistributed, Dropout
+
+from callbacks.samples_visualizer import SampleVisCallback
 from dataset_generators.simple_memory_data_generator import SimpleMemoryDataGenerator
 
 
@@ -22,15 +26,18 @@ class SimpleLSTMModel:
         self.num_of_epochs = num_of_epochs
         self.model = self.set_model()
 
+        logdir = os.path.join("logs", datetime.now().strftime("%Y%m%d-%H%M%S"))
+        self.tb_callback = tf.keras.callbacks.TensorBoard(logdir)
+
     def set_model(self):
-        input_layer = Input(shape=(self.seq_len, self.items_len, ))
-        lstm1 = Bidirectional(LSTM(units=64,
-                                   activation='relu',
-                                   return_sequences=True,
-                                   input_shape=(self.seq_len, self.items_len))
-                              )(input_layer)
-        lstm2 = Bidirectional(LSTM(units=64, activation='relu', return_sequences=True))(lstm1)
-        lstm3 = Bidirectional(LSTM(units=64, activation='relu', return_sequences=True))(lstm2)
+        input_layer = Input(shape=(self.seq_len, self.items_len,))
+        lstm1 = LSTM(units=64,
+                     activation='relu',
+                     return_sequences=True,
+                     input_shape=(self.seq_len, self.items_len))(input_layer)
+
+        lstm2 = LSTM(units=64, activation='relu', return_sequences=True)(lstm1)
+        lstm3 = LSTM(units=64, activation='relu', return_sequences=True)(lstm2)
 
         layer1_1 = TimeDistributed(Dense(units=64, activation='relu'))(lstm3)
         layer1_2 = TimeDistributed(Dense(units=64, activation='sigmoid'))(layer1_1)
@@ -49,7 +56,7 @@ class SimpleLSTMModel:
         optimizer = tf.keras.optimizers.Adam(clipvalue=0.5)
         model.compile(optimizer=optimizer,
                       loss={'y1_output': 'binary_crossentropy', 'y2_output': self.missed_value_loss},
-                      metrics=['accuracy'])
+                      metrics={'y1_output': 'accuracy', 'y2_output': self.missed_value_acc})
         print(model.summary())
         return model
 
@@ -82,9 +89,13 @@ class SimpleLSTMModel:
 
         return train_X, (train_Y_1, train_Y_2), val_X, (val_Y_1, val_Y_2), test_X, (test_Y_1, test_Y_2)
 
-    def train(self, train_X: np.array, train_Y: np.array, val_X: np.array, val_Y: np.array):
+    def train(self,
+              train_X: np.array, train_Y: np.array,
+              val_X: np.array, val_Y: np.array,
+              test_X: np.array, test_Y: np.array):
         history = self.model.fit(train_X, train_Y, epochs=self.num_of_epochs, batch_size=self.batch_size,
-                                 validation_data=(val_X, val_Y))
+                                 validation_data=(val_X, val_Y),
+                                 callbacks=[self.tb_callback, SampleVisCallback(test_X, test_Y)])
         return history
 
     def missed_value_loss(self, y_true: tf.Tensor, y_pred: tf.Tensor):
@@ -96,6 +107,13 @@ class SimpleLSTMModel:
         correct_cross_entropy_res = tf.math.reduce_sum(cross_entropy_res[y_true_labels])
         return correct_cross_entropy_res
 
+    def missed_value_acc(self, y_true: tf.Tensor, y_pred: tf.Tensor):
+        y_pred_labels = tf.argmax(y_pred, axis=-1)
+        y_true_flags = tf.cast(tf.reshape(y_true != -1, shape=(self.batch_size, -1)), tf.int32)
+        res_diff = tf.dtypes.cast(y_pred_labels == tf.cast(y_true, tf.int64), tf.int32)
+        res = y_true_flags * res_diff + (1 - y_true_flags) * tf.ones(shape=y_true.shape, dtype=tf.int32)
+        return tf.reduce_sum(res) / tf.size(res)
+
     def evaluate(self, test_X: np.array, test_Y: np.array):
         print("Evaluating test results:")
-        self.model.evaluate(test_X, test_Y, batch_size=self.batch_size)
+        self.model.evaluate(test_X, test_Y, batch_size=self.batch_size, callbacks=[self.tb_callback])

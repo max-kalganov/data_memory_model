@@ -5,10 +5,10 @@
 data_generator_batch_size = 1
 model_batch_size = 128
 seq_len = 30
-num_of_epochs = 5
+num_of_epochs = 50
 items_len = 10
-features_range = 5
-num_of_batches = 6400
+features_range = 10
+num_of_batches = 64000
 missed_value = 100
 seed = 5
 train_test_split = 0.2
@@ -49,3 +49,7 @@ SimpleLSTMModel.batch_size = %model_batch_size
 SimpleLSTMModel.train_test_split = %train_test_split
 SimpleLSTMModel.train_val_split = %train_val_split
 SimpleLSTMModel.num_of_epochs = %num_of_epochs
+
+# SampleVisCallback
+
+SampleVisCallback.n_samples = 1
