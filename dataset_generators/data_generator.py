@@ -10,13 +10,13 @@ InputOutput_T = Tuple[np.array, np.array]
 
 @gin.configurable
 class DataGenerator:
-    def __init__(self, batch_size: Optional[int], seq_len: int, num_of_batches: int, mut_prob: MutProb_T, missed_value: int,
+    def __init__(self, batch_size: int, seq_len: int, num_of_batches: Optional[int], mut_prob: MutProb_T, missed_value: int,
                  seed: int):
         """ Implements data generator interface and some base functionality
         Args:
             seq_len: int - if 1 seen_vectors not overwritten, else seen_vectors are used only for a batch
-            batch_size: Optional[int] - if None - no limit generator, else batch sizes are set
-            num_of_batches: int - num of batches
+            batch_size: int - batch size
+            num_of_batches: Optional[int] - if None - no limit generator, else num of batches
             mut_prob: Tuple[float, float, float, float, float, float] - Probabilities for running methods:
                         self._gen_new_item,
                         self._gen_seen_item,
@@ -27,8 +27,8 @@ class DataGenerator:
         """
 
         assert sum(mut_prob) == 1, "wrong mut prob"
-        assert num_of_batches >= 1, "wrong num of batches"
-        assert batch_size >= 1 or batch_size is None, "wrong batch size"
+        assert batch_size >= 1, "wrong batch size"
+        assert num_of_batches >= 1 or num_of_batches is None, "wrong num of batches"
         self.batch_size = batch_size
         self.seq_len = seq_len
         self.mut_prob = mut_prob
@@ -66,7 +66,8 @@ class DataGenerator:
     def __iter__(self):
         while self.num_of_batches != 0:
             yield self.__next__()
-            self.num_of_batches -= 1
+            if self.num_of_batches is not None:
+                self.num_of_batches -= 1
 
     def _next_seq(self):
         seq_inputs = []
