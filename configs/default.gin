@@ -1,6 +1,27 @@
-DataGenerator.batch_size = 30
-DataGenerator.seq_len = 30
-DataGenerator.num_of_batches = 500
+#########################
+# main constants
+#########################
+
+batch_size = 30
+seq_len = 30
+items_len = 5
+features_range = 10
+num_of_batches = 1000
+missed_value = 100
+seed = 5
+train_test_split = 0.2
+train_val_split = 0.2
+
+
+#########################
+# configurations
+#########################
+
+# DataGenerator
+
+DataGenerator.batch_size = %batch_size
+DataGenerator.seq_len = %seq_len
+DataGenerator.num_of_batches = %num_of_batches
 DataGenerator.mut_prob = (
     0.25,   # self._gen_new_item
     0.1,    # self._gen_seen_item
@@ -9,15 +30,19 @@ DataGenerator.mut_prob = (
     0.05,   # self._gen_changed_item
     0.05    # self._gen_changed_with_missed_item
 )
-DataGenerator.missed_value = 100
-DataGenerator.seed = 5
+DataGenerator.missed_value = %missed_value
+DataGenerator.seed = %seed
 
-FullMemoryDataGenerator.items_len = 5
-FullMemoryDataGenerator.features_range = 10
+# FullMemoryDataGenerator
 
-SimpleLSTMModel.seq_len = 30
-SimpleLSTMModel.items_len = 5
-SimpleLSTMModel.features_range = 10
-SimpleLSTMModel.batch_size = 30
-SimpleLSTMModel.train_test_split = 0.2
-SimpleLSTMModel.train_val_split = 0.2
+FullMemoryDataGenerator.items_len = %items_len
+FullMemoryDataGenerator.features_range = %features_range
+
+# SimpleLSTMModel
+
+SimpleLSTMModel.seq_len = %seq_len
+SimpleLSTMModel.items_len = %items_len
+SimpleLSTMModel.features_range = %features_range
+SimpleLSTMModel.batch_size = %batch_size
+SimpleLSTMModel.train_test_split = %train_test_split
+SimpleLSTMModel.train_val_split = %train_val_split
