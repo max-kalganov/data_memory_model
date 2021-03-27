@@ -3,11 +3,12 @@
 #########################
 
 data_generator_batch_size = 1
-model_batch_size = 20
+model_batch_size = 128
 seq_len = 30
-items_len = 5
-features_range = 10
-num_of_batches = 1000
+num_of_epochs = 5
+items_len = 10
+features_range = 5
+num_of_batches = 6400
 missed_value = 100
 seed = 5
 train_test_split = 0.2
@@ -47,3 +48,4 @@ SimpleLSTMModel.features_range = %features_range
 SimpleLSTMModel.batch_size = %model_batch_size
 SimpleLSTMModel.train_test_split = %train_test_split
 SimpleLSTMModel.train_val_split = %train_val_split
+SimpleLSTMModel.num_of_epochs = %num_of_epochs
