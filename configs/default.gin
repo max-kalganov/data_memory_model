@@ -2,7 +2,8 @@
 # main constants
 #########################
 
-batch_size = 30
+data_generator_batch_size = 1
+model_batch_size = 20
 seq_len = 30
 items_len = 5
 features_range = 10
@@ -19,7 +20,7 @@ train_val_split = 0.2
 
 # DataGenerator
 
-DataGenerator.batch_size = %batch_size
+DataGenerator.batch_size = %data_generator_batch_size
 DataGenerator.seq_len = %seq_len
 DataGenerator.num_of_batches = %num_of_batches
 DataGenerator.mut_prob = (
@@ -43,6 +44,6 @@ FullMemoryDataGenerator.features_range = %features_range
 SimpleLSTMModel.seq_len = %seq_len
 SimpleLSTMModel.items_len = %items_len
 SimpleLSTMModel.features_range = %features_range
-SimpleLSTMModel.batch_size = %batch_size
+SimpleLSTMModel.batch_size = %model_batch_size
 SimpleLSTMModel.train_test_split = %train_test_split
 SimpleLSTMModel.train_val_split = %train_val_split
