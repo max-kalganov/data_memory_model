@@ -23,7 +23,7 @@ class SampleVisCallback(tf.keras.callbacks.Callback):
         y_test = self.ground_truth[0][-self.n_samples:, :], self.ground_truth[1][-self.n_samples:, :]
         predictions = self.model.predict(x_test)
         for i in range(self.n_samples):
-            # print(f"x_test: {x_test[i]}")
+            print(f"x_test: {x_test[i]}")
             cur_pred = self.process_y_pred(predictions[0][i], predictions[1][i], y_test[1][i])
             print(f"y_true_output1: {y_test[0][i]}")
             print(f"y_pred_output1: {cur_pred[0]}")

@@ -16,11 +16,12 @@ def run_model():
     if __name__ == '__main__':
         gin.parse_config_file('configs/default.gin')
 
-        model = m.SimpleLSTMModel()
+        model = m.SimpleLSTMModel(path_to_weights='data/model_weights.h5')
         train_X, train_Y, val_X, val_Y, test_X, test_Y = model.get_train_val_test()
         model.train(train_X, train_Y, val_X, val_Y, test_X, test_Y)
         model.evaluate(test_X, test_Y)
-        model.model.save('data/my_model.h5')
+        model.model.save_weights('data/model_weights.h5')
+
 
 if __name__ == '__main__':
     run_model()

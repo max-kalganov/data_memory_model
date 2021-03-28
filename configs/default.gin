@@ -4,7 +4,7 @@
 
 data_generator_batch_size = 1
 model_batch_size = 128
-seq_len = 30
+seq_len = 20
 num_of_epochs = 50
 items_len = 10
 features_range = 10

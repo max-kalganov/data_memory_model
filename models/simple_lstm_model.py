@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import Tuple
+from typing import Tuple, Optional
 
 import gin
 import tensorflow as tf
@@ -15,8 +15,8 @@ from dataset_generators.simple_memory_data_generator import SimpleMemoryDataGene
 
 @gin.configurable
 class SimpleLSTMModel:
-    def __init__(self, seq_len: int, items_len: int, features_range: int, batch_size: int,
-                 num_of_epochs: int, train_test_split: float, train_val_split: float):
+    def __init__(self, seq_len: int, items_len: int, features_range: int, batch_size: int,  num_of_epochs: int,
+                 train_test_split: float, train_val_split: float, path_to_weights: Optional[str] = None):
         self.items_len = items_len
         self.seq_len = seq_len
         self.features_range = features_range
@@ -25,6 +25,9 @@ class SimpleLSTMModel:
         self.batch_size = batch_size
         self.num_of_epochs = num_of_epochs
         self.model = self.set_model()
+        if path_to_weights:
+            self.model.load_weights(path_to_weights)
+            print(f"loaded weights from {path_to_weights}")
 
         logdir = os.path.join("logs", datetime.now().strftime("%Y%m%d-%H%M%S"))
         self.tb_callback = tf.keras.callbacks.TensorBoard(logdir)
@@ -111,8 +114,8 @@ class SimpleLSTMModel:
         y_pred_labels = tf.argmax(y_pred, axis=-1)
         y_true_flags = tf.cast(tf.reshape(y_true != -1, shape=(self.batch_size, -1)), tf.int32)
         res_diff = tf.dtypes.cast(y_pred_labels == tf.cast(y_true, tf.int64), tf.int32)
-        res = y_true_flags * res_diff + (1 - y_true_flags) * tf.ones(shape=y_true.shape, dtype=tf.int32)
-        return tf.reduce_sum(res) / tf.size(res)
+        res = y_true_flags * res_diff
+        return tf.reduce_sum(res) / tf.reduce_sum(y_true_flags)
 
     def evaluate(self, test_X: np.array, test_Y: np.array):
         print("Evaluating test results:")
