@@ -40,6 +40,11 @@ DataGenerator.seed = %seed
 FullMemoryDataGenerator.items_len = %items_len
 FullMemoryDataGenerator.features_range = %features_range
 
+# SequenceMemoryDataGenerator
+
+SequenceMemoryDataGenerator.items_len = %items_len
+SequenceMemoryDataGenerator.features_range = %features_range
+
 # SimpleLSTMModel
 
 SimpleLSTMModel.seq_len = %seq_len

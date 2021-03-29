@@ -2,7 +2,6 @@ import random
 from typing import Tuple, Optional, List, Set
 import gin
 
-import tensorflow as tf
 import numpy as np
 
 from dataset_generators.data_generator import DataGenerator, InputOutput_T
