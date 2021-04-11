@@ -2,7 +2,6 @@ import random
 from typing import Optional, List
 
 import gin
-import tensorflow as tf
 import numpy as np
 import tqdm as tqdm
 
