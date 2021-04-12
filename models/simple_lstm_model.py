@@ -98,7 +98,7 @@ class SimpleLSTMModel:
               test_X: np.array, test_Y: np.array):
         history = self.model.fit(train_X, train_Y, epochs=self.num_of_epochs, batch_size=self.batch_size,
                                  validation_data=(val_X, val_Y),
-                                 callbacks=[self.tb_callback, SampleVisCallback(test_X, test_Y)])
+                                 callbacks=[self.tb_callback])
         return history
 
     def missed_value_loss(self, y_true: tf.Tensor, y_pred: tf.Tensor):

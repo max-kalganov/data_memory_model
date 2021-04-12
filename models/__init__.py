@@ -1,1 +1,2 @@
 from .simple_lstm_model import SimpleLSTMModel
+from .memory_extended_lstm import ExtendedMemoryModel

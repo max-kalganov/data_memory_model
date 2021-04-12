@@ -3,16 +3,18 @@
 #########################
 
 data_generator_batch_size = 1
+num_of_batches = 64000
+
 model_batch_size = 128
 seq_len = 20
 num_of_epochs = 50
 items_len = 10
 features_range = 10
-num_of_batches = 64000
 missed_value = 100
 seed = 5
 train_test_split = 0.2
-train_val_split = 0.2
+train_val_split = 0.125
+memory_capacity = %seq_len
 
 
 #########################
@@ -58,3 +60,11 @@ SimpleLSTMModel.num_of_epochs = %num_of_epochs
 # SampleVisCallback
 
 SampleVisCallback.n_samples = 1
+
+# ExtendedMemoryModel
+
+ExtendedMemoryModel.f_block_num_layers = 5
+ExtendedMemoryModel.f_block_units = 64
+ExtendedMemoryModel.s_block_num_layers = 5
+ExtendedMemoryModel.s_block_units = 64
+ExtendedMemoryModel.state_shape = [%items_len, %memory_capacity]

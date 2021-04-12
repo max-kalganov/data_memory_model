@@ -11,6 +11,15 @@ def test_simple_dataset():
         print(f"\nbatch x = {batch_x.shape}, batch y = {batch_y.shape}")
 
 
+def run_extended_model():
+    model = m.ExtendedMemoryModel()
+    train_X, train_Y, val_X, val_Y, test_X, test_Y = model.get_train_val_test()
+    print(f"train_X.shape = {train_X.shape}\nval_X.shape = {val_X.shape}\ntest_X.shape = {test_X.shape}")
+    model.train(train_X, train_Y, val_X, val_Y, test_X, test_Y)
+    model.evaluate(test_X, test_Y)
+    model.model.save_weights('data/extended_model.h5')
+
+
 def run_model():
     model = m.SimpleLSTMModel(path_to_weights='data/model_weights.h5')
     train_X, train_Y, val_X, val_Y, test_X, test_Y = model.get_train_val_test()
@@ -21,4 +30,4 @@ def run_model():
 
 if __name__ == '__main__':
     gin.parse_config_file('configs/default.gin')
-    run_model()
+    run_extended_model()
